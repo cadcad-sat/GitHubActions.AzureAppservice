@@ -43,7 +43,7 @@ jobs:
           dotnet test '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WebApi.Test' -c Debug 
 
   build-and-deploy:
-    if: ${{ github.ref == 'master' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     # needs: [test]
     steps:
