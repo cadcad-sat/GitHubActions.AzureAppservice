@@ -22,11 +22,14 @@ env:
 
 jobs:
   test:
-    name: Debug Build & Test
+    name: Debug Test
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
-      # Checkout the repo
-      - uses: actions/checkout@master
+      # Checkout the pull request SHA
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       
       # Setup .NET Core SDK
       - name: Setup .NET Core
@@ -40,8 +43,9 @@ jobs:
           dotnet test '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WebApi.Test' -c Debug 
 
   build-and-deploy:
+    if: ${{ github.ref == 'master' }}
     runs-on: ubuntu-latest
-    needs: [test]
+    # needs: [test]
     steps:
 
       # Checkout the repo
