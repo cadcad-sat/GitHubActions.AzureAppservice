@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace WebApi
 {
@@ -26,6 +19,27 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerDocument(config =>
+            {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "Test Deploy by GitHub Actions";
+                    document.Info.Description = "A simple ASP.NET Core web API";
+                    document.Info.TermsOfService = "None";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "",
+                        Email = string.Empty,
+                        Url = ""
+                    };
+                    document.Info.License = new NSwag.OpenApiLicense
+                    {
+                        Name = "",
+                        Url = ""
+                    };
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,7 +49,12 @@ namespace WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseOpenApi();
+            app.UseSwaggerUi3(config =>
+            {
+                config.Path = "";
+            });
             app.UseHttpsRedirection();
 
             app.UseRouting();
